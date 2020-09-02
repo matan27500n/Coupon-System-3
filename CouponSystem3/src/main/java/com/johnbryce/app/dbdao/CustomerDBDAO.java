@@ -40,4 +40,8 @@ public class CustomerDBDAO {
 	public List<Customer> getAllCustomers() {
 		return customerRepository.findAll();
 	}
+
+	public Customer getCustomerByEmailAndPassword(String email, String password) {
+		return customerRepository.findByEmailAndPassword(email, password);
+	}
 }

@@ -94,4 +94,8 @@ public class CompanyService extends ClientService {
 		System.out.print("The detailes are wrong,CompanyService login failed...");
 	}
 
+	public int getcompanyIdByEmailAndPassword(String email, String password) {
+		return companyDBDAO.getCompanyByEmailAndPassword(email, password).getId();
+	}
+
 }

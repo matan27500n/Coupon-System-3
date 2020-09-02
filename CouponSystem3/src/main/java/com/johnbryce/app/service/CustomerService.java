@@ -67,7 +67,7 @@ public class CustomerService extends ClientService {
 		System.out.println("coupon " + coupon.getId() + " amount before purchase: " + coupon.getAmount());
 		coupon.setAmount(coupon.getAmount() - 1);
 		System.out.println("coupon " + coupon.getId() + " amount after purchase: " + coupon.getAmount());
-		//System.out.println(customer);
+		// System.out.println(customer);
 		customerDBDAO.updateCustomer(customer);
 	}
 
@@ -116,6 +116,10 @@ public class CustomerService extends ClientService {
 
 	public void printWrongMessage() {
 		System.out.print("The detailes are wrong,CustomerService login failed...");
+	}
+
+	public int getCustomerIdByEmailAndPassword(String email, String password) {
+		return customerDBDAO.getCustomerByEmailAndPassword(email, password).getId();
 	}
 
 }
