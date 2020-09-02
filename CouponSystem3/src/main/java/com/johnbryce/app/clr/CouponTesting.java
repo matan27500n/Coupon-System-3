@@ -173,7 +173,7 @@ public class CouponTesting implements CommandLineRunner {
 
 		// coupon expired check
 		printUtils.seperateLines("CouponExpired Running:");
-		couponExpirationDailyJob.run();
+		couponExpirationDailyJob.deleteCouponsExpired();
 
 		System.out.println();
 
