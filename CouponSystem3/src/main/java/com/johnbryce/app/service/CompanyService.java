@@ -1,44 +1,32 @@
 package com.johnbryce.app.service;
 
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
 import com.johnbryce.app.beans.Company;
 import com.johnbryce.app.beans.Coupon;
-import com.johnbryce.app.dbdao.CompanyDBDAO;
-import com.johnbryce.app.dbdao.CouponDBDAO;
 import com.johnbryce.app.exceptions.NotAllowedException;
 import com.johnbryce.app.exceptions.NotExistException;
-
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import com.johnbryce.app.beans.Category;
 
 @Service
 @Scope("prototype")
 @Getter
 @Setter
+@NoArgsConstructor
 public class CompanyService extends ClientService {
 
 	private int companyID;
 
-	@Autowired
-	private CompanyDBDAO companyDBDAO;
-
-	@Autowired
-	private CouponDBDAO couponDBDAO;
-
 	@Override
 	public boolean login(String email, String password) {
-		if (companyDBDAO.isCompanyExistsByEmailAndPassword(email, password) == true) {
-			this.companyID = companyDBDAO.getCompanyByEmailAndPassword(email, password).getId();
-			return true;
+		if (companyRepository.findByEmailAndPassword(email, password) == null) {
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	public void addCoupon(Coupon coupon) throws NotAllowedException {
@@ -50,23 +38,22 @@ public class CompanyService extends ClientService {
 				}
 			}
 		}
-		couponDBDAO.addCoupon(coupon);
+		couponRepository.save(coupon);
 	}
 
 	public void updateCoupon(Coupon coupon) throws NotExistException {
-		if (couponDBDAO.isCouponExists(coupon.getId()) == false) {
+		if (couponRepository.existsById(coupon.getId()) == false) {
 			throw new NotExistException("The Coupon doesn't exists in the system");
 		}
-		couponDBDAO.updateCoupon(coupon);
+		couponRepository.saveAndFlush(coupon);
 	}
 
 	public void deleteCoupon(int couponID) throws NotExistException {
-		if (couponDBDAO.isCouponExists(couponID) == false) {
+		if (couponRepository.existsById(couponID) == false) {
 			throw new NotExistException("The Coupon doesn't exists in the system");
 		}
-		couponDBDAO.deleteCoupon(couponDBDAO.getOneCoupon(couponID));
-		int id = couponDBDAO.getOneCoupon(couponID).getCompanyID();
-		companyDBDAO.updateCompany(companyDBDAO.getOneCompany(id));
+		couponRepository.delete(couponRepository.getOne(couponID));
+		companyRepository.saveAndFlush(companyRepository.getOne(couponRepository.getOne(couponID).getCompanyID()));
 	}
 
 	public List<Coupon> getAllCompanyCoupons() {
@@ -82,20 +69,15 @@ public class CompanyService extends ClientService {
 	}
 
 	public Company getCompanyDetailes() {
-		return companyDBDAO.getOneCompany(companyID);
+		return companyRepository.getOne(companyID);
+	}
+
+	public int getCompanyIdByEmailAndPassword(String email, String password) {
+		return companyRepository.findByEmailAndPassword(email, password).getId();
 	}
 
 	@Override
 	public String toString() {
 		return "CompanyService login successfully!!";
 	}
-
-	public void printWrongMessage() {
-		System.out.print("The detailes are wrong,CompanyService login failed...");
-	}
-
-	public int getcompanyIdByEmailAndPassword(String email, String password) {
-		return companyDBDAO.getCompanyByEmailAndPassword(email, password).getId();
-	}
-
 }

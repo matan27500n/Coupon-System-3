@@ -9,9 +9,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class CouponSystem3Application {
 
 	public static void main(String[] args) {
-		System.out.println("START");
 		SpringApplication.run(CouponSystem3Application.class, args);
-		System.out.println("Ioc container is ready...");
+		System.out.println("IOC container was loaded...");
 	}
 
 }

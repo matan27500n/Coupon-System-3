@@ -2,7 +2,6 @@ package com.johnbryce.app.clr;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -40,13 +39,14 @@ public class CustomerTesting implements CommandLineRunner {
 		for (int i = 0; i < custoArrays.size(); i++) {
 			adminService.addCustomer(custoArrays.get(i));
 		}
-		printUtils.printCustomers();
+		printUtils.printCustomersWithOutCoupon(adminService.getAllCustomers());
 
 		// customer login - success
-		System.out.println("Customer success?: " + customerService.login("topazdali@gmail.com", "topazTheQuine123"));
+		System.out.println(
+				"Customer login success?: " + customerService.login("topazdali@gmail.com", "topazTheQuine123"));
 		// customer login - fails
-		System.out
-				.println("Customer success?: " + customerService.login("topazdali77@gmail.com", "topazTheQuine12345"));
+		System.out.println(
+				"Customer login success?: " + customerService.login("topazdali77@gmail.com", "topazTheQuine12345"));
 		System.out.println();
 
 		// customer exists - true
@@ -60,17 +60,15 @@ public class CustomerTesting implements CommandLineRunner {
 		c1.setEmail("topaz12@gmail.com");
 		adminService.updateCustomer(c1);
 		System.out.println("After updating customer " + c1.getId() + " :");
-		printUtils.printOneCustomer(c1);
+		printUtils.printOneCustomerWithOutCoupon(c1);
 
 		// delete customer
 		adminService.deleteCustomer(c5);
-		System.out.println("customers detailes after deleting: ");
-		printUtils.printCustomers();
+		System.out.println("customers detailes after deleting customer " + c5.getId() + ":");
+		printUtils.printCustomersWithOutCoupon(adminService.getAllCustomers());
 
 		// get one customer
-		System.out.println("get customer :");
-		printUtils.printOneCustomer(adminService.getOneCustomer(3));
-
+		System.out.println("get customer 3:");
+		printUtils.printOneCustomerWithOutCoupon((adminService.getOneCustomer(3)));
 	}
-
 }

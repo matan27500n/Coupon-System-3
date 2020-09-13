@@ -13,8 +13,6 @@ import com.johnbryce.app.beans.Coupon;
 
 public interface CouponRepository extends JpaRepository<Coupon, Integer> {
 
-	boolean findById(int couponID);
-
 	List<Coupon> findByCompanyID(int companyID);
 
 	List<Coupon> findByCategoryID(Category category);

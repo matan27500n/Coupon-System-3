@@ -10,6 +10,7 @@ import com.johnbryce.app.repo.CustomerRepository;
 
 @Service
 public abstract class ClientService {
+
 	@Autowired
 	protected CompanyRepository companyRepository;
 	@Autowired

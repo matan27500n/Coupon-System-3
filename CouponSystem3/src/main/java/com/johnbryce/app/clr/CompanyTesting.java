@@ -40,7 +40,7 @@ public class CompanyTesting implements CommandLineRunner {
 		for (int i = 0; i < companyArrays.size(); i++) {
 			adminService.addCompany(companyArrays.get(i));
 		}
-		printUtils.printCompanies();
+		printUtils.printCompaniesWithOutCoupon(adminService.getAllCompanies());
 
 		// company login - success
 		System.out.println("company loging success? : " + companyService.login("pepsi@gmail.com", "1234"));
@@ -55,18 +55,17 @@ public class CompanyTesting implements CommandLineRunner {
 
 		// delete company
 		adminService.deleteCompany(c5.getId());
-		// trying to delete company that not exists
-		// adminService.deleteCompany(10);
-
-		System.out.println("The companies after deleting: ");
-		printUtils.printCompanies();
+		System.out.println();
+		System.out.println("The companies after deleting company " + c5.getId() + " :");
+		printUtils.printCompaniesWithOutCoupon(adminService.getAllCompanies());
 
 		// get one company
-		printUtils.printOneCompany(adminService.getOneCompany(1));
+		System.out.println("Get company 1:");
+		printUtils.printOneCompanyWithOutCoupon(adminService.getOneCompany(1));
 
 		// get company by email and password
-		printUtils.printOneCompany(adminService.getCompanyByEmailAndPassword("superpharm@gmail.com", "3567"));
-
+		System.out.println("Get company by email and password:");
+		printUtils.printOneCompanyWithOutCoupon(
+				adminService.getCompanyByEmailAndPassword("superpharm@gmail.com", "3567"));
 	}
-
 }

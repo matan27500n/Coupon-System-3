@@ -1,7 +1,6 @@
 package com.johnbryce.app.beans;
 
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,9 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,7 +26,6 @@ public class Customer {
 	private String last_name;
 	private String email;
 	private String password;
-	// @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private List<Coupon> coupons;
 

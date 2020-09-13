@@ -1,12 +1,11 @@
-package com.johnbryce.app.manager;
+package com.johnbryce.app.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.johnbryce.app.exceptions.LoginException;
+import com.johnbryce.app.exceptions.NotAllowedException;
 import com.johnbryce.app.service.AdminService;
 import com.johnbryce.app.service.ClientService;
-import com.johnbryce.app.service.ClientType;
 import com.johnbryce.app.service.CompanyService;
 import com.johnbryce.app.service.CustomerService;
 
@@ -25,8 +24,6 @@ public class LoginManager {
 	@Autowired
 	TokenManager tokenManager;
 
-	private ClientService clientService;
-
 	public String login2(String email, String password, ClientType clientType) throws LoginException {
 		switch (clientType) {
 		case Administrator:
@@ -35,7 +32,7 @@ public class LoginManager {
 			}
 		case Company:
 			if (companyService.login(email, password)) {
-				int companyID = companyService.getcompanyIdByEmailAndPassword(email, password);
+				int companyID = companyService.getCompanyIdByEmailAndPassword(email, password);
 				companyService.setCompanyID(companyID);
 				return tokenManager.addToken(companyService);
 			}
@@ -48,6 +45,25 @@ public class LoginManager {
 
 		default:
 			throw new LoginException("Invalid user or password or type");
+		}
+	}
+
+	public ClientService login(String email, String password, ClientType clientType) throws NotAllowedException {
+		switch (clientType) {
+		case Administrator:
+			if (adminService.login(email, password) == true) {
+				return adminService;
+			}
+		case Customer:
+			if (customerService.login(email, password) == true) {
+				return customerService;
+			}
+		case Company:
+			if (companyService.login(email, password) == true) {
+				return companyService;
+			}
+		default:
+			throw new NotAllowedException("email or password or type wrongs");
 		}
 	}
 }

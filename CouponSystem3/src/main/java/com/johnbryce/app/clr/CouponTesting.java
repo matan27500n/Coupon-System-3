@@ -1,6 +1,6 @@
 package com.johnbryce.app.clr;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +14,10 @@ import com.johnbryce.app.beans.Customer;
 import com.johnbryce.app.exceptions.NotAllowedException;
 import com.johnbryce.app.exceptions.NotExistException;
 import com.johnbryce.app.schedule.CouponExpirationDailyJob;
+import com.johnbryce.app.security.ClientType;
+import com.johnbryce.app.security.LoginManager;
 import com.johnbryce.app.service.AdminService;
-import com.johnbryce.app.service.ClientType;
 import com.johnbryce.app.service.CustomerService;
-import com.johnbryce.app.service.LoginManager;
 import com.johnbryce.app.util.PrintUtils;
 import com.johnbryce.app.util.Utilities;
 
@@ -40,26 +40,14 @@ public class CouponTesting implements CommandLineRunner {
 	@Autowired
 	private LoginManager loginManager;
 
-	public void addCouponsToCompanies() throws NotExistException, NotAllowedException {
-
-		List<Coupon> coupons = adminService.getAllCoupons();
-		List<Company> companies = adminService.getAllCompanies();
-		@SuppressWarnings("unused")
-		boolean flag = false;
-		for (Coupon coupon : coupons) {
-			flag = false;
-			for (Company company : companies) {
-				if (coupon.getCompanyID() == company.getId()) {
-					company.addCoupon(coupon);
-					adminService.updateCompany(company);
-					flag = true;
-					break;
-				}
-			}
-			if (flag = false) {
-				throw new NotExistException("The Coupon is not fit to the company");
-			}
+	public void addCouponToCompany(Coupon coupon) throws NotExistException, NotAllowedException {
+		if (!adminService.isCompanyExists(coupon.getCompanyID())) {
+			throw new NotExistException(
+					"The company is not exists in the system, you canno't add coupon to the company");
 		}
+		Company company = adminService.getOneCompany(coupon.getCompanyID());
+		company.addCoupon(coupon);
+		adminService.addCoupon(coupon);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -84,35 +72,39 @@ public class CouponTesting implements CommandLineRunner {
 		Date d10 = new Date(2021, 5, 10);
 
 		// create the coupons
+		List<Coupon> coupons = new ArrayList<>();
 		Coupon c1 = new Coupon(1, Category.Drinks, "sale", "30%", Utilities.convertUtilDateToSQL(d1),
 				Utilities.convertUtilDateToSQL(d2), 10, 10, "coca");
+		addCouponToCompany(c1);
+		coupons.add(c1);
 		Coupon c2 = new Coupon(2, Category.Drinks, "50%", "50% on all the bottles", Utilities.convertUtilDateToSQL(d3),
 				Utilities.convertUtilDateToSQL(d4), 150, 3, "pepsi");
+		addCouponToCompany(c2);
+		coupons.add(c2);
 		Coupon c3 = new Coupon(3, Category.Pharmacy, "10%", "10% on all the loations",
 				Utilities.convertUtilDateToSQL(d5), Utilities.convertUtilDateToSQL(d6), 76, 8, "superpharm");
+		addCouponToCompany(c3);
+		coupons.add(c3);
 		Coupon c4 = new Coupon(4, Category.Pharmacy, "1+1", "1+1 on all the Axe", Utilities.convertUtilDateToSQL(d7),
 				Utilities.convertUtilDateToSQL(d8), 200, 10, "goodpharm");
-		Coupon c5 = new Coupon(5, Category.Fast_food, "5%", "5% sale on all the whoppers",
-				Utilities.convertUtilDateToSQL(d9), Utilities.convertUtilDateToSQL(d10), 300, 24, "burgerking");
-		List<Coupon> couponArrays = Arrays.asList(c1, c2, c3, c4, c5);
+		addCouponToCompany(c4);
+		coupons.add(c4);
+		Coupon c5 = new Coupon(1, Category.Drinks, "sale All", "26% discount", Utilities.convertUtilDateToSQL(d9),
+				Utilities.convertUtilDateToSQL(d10), 10, 10, "coca");
+		addCouponToCompany(c5);
+		coupons.add(c5);
 
-		// add the coupons
-		for (int i = 0; i < couponArrays.size(); i++) {
-			adminService.addCoupon(couponArrays.get(i));
-		}
-
-		// adding coupons to the companies and updating
-		addCouponsToCompanies();
-		System.out.println("The company full detailes are: ");
-		printUtils.printCompanies();
+		System.out.println("Companies full details:");
+		printUtils.printCompanies(coupons, adminService.getAllCompanies());
 
 		System.out.println("The coupons are: ");
-		printUtils.printCoupons();
+		printUtils.printCoupons(adminService.getAllCoupons());
 
 		// coupon exists? - true
 		System.out.println("does coupon exists? " + adminService.isCouponExists(1));
 		// coupon exists? - false
 		System.out.println("does coupon exists? " + adminService.isCouponExists(10));
+		System.out.println();
 
 		// update coupon
 		c1.setDescription("30% sale on all the cans");
@@ -122,15 +114,15 @@ public class CouponTesting implements CommandLineRunner {
 
 		// delete coupon
 		adminService.deleteCoupon(c4);
-		System.out.println("coupons after delete ");
-		printUtils.printCoupons();
+		System.out.println("coupons after delete coupon " + c4.getId() + ":");
+		printUtils.printCoupons(adminService.getAllCoupons());
 
 		// get one coupon
-		System.out.println("one coupon: ");
+		System.out.println("get coupon 3:");
 		printUtils.printOneCoupon(adminService.getOneCoupon(3));
 
 		// purchase coupon
-		printUtils.seperateLines("Coupon purchase and delete");
+		printUtils.seperateLines("Coupons purchase and delete:");
 		customerService.setCustomerID(1);
 		customerService.purchaseCoupon(c1);
 		printUtils.printOneCustomer(adminService.getOneCustomer(1));
@@ -138,7 +130,7 @@ public class CouponTesting implements CommandLineRunner {
 		customerService.purchaseCoupon(c1);
 		printUtils.printOneCustomer(adminService.getOneCustomer(2));
 		System.out.println();
-		printUtils.printCustomers();
+		printUtils.printCustomers(adminService.getAllCustomers());
 
 		// delete coupon and his purchases
 		List<Customer> customers = customerService.getAllCustomers();
@@ -151,31 +143,25 @@ public class CouponTesting implements CommandLineRunner {
 		adminService.deleteCoupon(c1);
 		customerService.deleteCustomersVScoupons(c1.getId());
 		System.out.println("Print customers details after deleting coupons:");
-		printUtils.printCustomers();
-
-		// trying to purchase another coupon that have already expired
-		// customerService.setCustomerID(2);
-		// customerService.purchaseCoupon(c2);
+		printUtils.printCustomers(adminService.getAllCustomers());
 
 		// login manager successfully
 		printUtils.seperateLines("Login Manager:");
 		System.out.println("Login manager success:");
 		System.out.println(loginManager.login("admin@admin.com", "admin", ClientType.Administrator));
 		System.out.println(loginManager.login("topaz12@gmail.com", "topazTheQuine123", ClientType.Customer));
-		System.out.println(loginManager.login("coca@gmail.com", "1234", ClientType.Company));
+		System.out.println(loginManager.login("pepsi@gmail.com", "1234", ClientType.Company));
 
-		// login manager not successfully
 		System.out.println();
-		System.out.println("Login manager failes: ");
-		System.out.println(loginManager.login("admin@admin.com", "company", ClientType.Administrator));
-		System.out.println(loginManager.login("topaz@gmail.com", "topazTheQuine123", ClientType.Customer));
-		System.out.println(loginManager.login("coca12@gmail.com", "1234", ClientType.Company));
+		printUtils.printCompanies(adminService.getAllCoupons(), adminService.getAllCompanies());
 
 		// coupon expired check
 		printUtils.seperateLines("CouponExpired Running:");
+		System.out.println("The coupons before deleting: ");
+		printUtils.printCoupons(adminService.getAllCoupons());
 		couponExpirationDailyJob.deleteCouponsExpired();
-
-		System.out.println();
+		System.out.println("The coupons after deleting:");
+		printUtils.printCoupons(adminService.getAllCoupons());
 
 	}
 

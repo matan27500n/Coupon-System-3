@@ -1,30 +1,16 @@
 package com.johnbryce.app.service;
 
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.johnbryce.app.beans.Company;
 import com.johnbryce.app.beans.Coupon;
 import com.johnbryce.app.beans.Customer;
-import com.johnbryce.app.dbdao.CompanyDBDAO;
-import com.johnbryce.app.dbdao.CouponDBDAO;
-import com.johnbryce.app.dbdao.CustomerDBDAO;
 import com.johnbryce.app.exceptions.AlreadyExitsException;
 import com.johnbryce.app.exceptions.NotAllowedException;
 import com.johnbryce.app.exceptions.NotExistException;
 
 @Service
 public class AdminService extends ClientService {
-	@Autowired
-	private CompanyDBDAO companyDBDAO;
-
-	@Autowired
-	private CouponDBDAO couponDBDAO;
-
-	@Autowired
-	private CustomerDBDAO customerDBDAO;
 
 	@Override
 	public boolean login(String email, String password) {
@@ -32,15 +18,14 @@ public class AdminService extends ClientService {
 	}
 
 	public boolean isCompanyExists(int id) {
-		return companyDBDAO.isCompanyExists(id);
+		return companyRepository.existsById(id);
 	}
 
 	public void addCompany(Company company) throws AlreadyExitsException {
-		if (companyRepository.findByEmail(company.getEmail()) != null
-				|| (companyRepository.findByName(company.getName()) != null)) {
+		if (companyRepository.findByNameAndEmail(company.getName(), company.getEmail()) != null) {
 			throw new AlreadyExitsException();
 		}
-		companyDBDAO.addCompany(company);
+		companyRepository.save(company);
 	}
 
 	public void updateCompany(Company company) throws NotExistException, NotAllowedException {
@@ -51,102 +36,117 @@ public class AdminService extends ClientService {
 		if (!company.getName().equals(company2.getName())) {
 			throw new NotAllowedException("You are not allowed to change name company");
 		}
-		companyDBDAO.updateCompany(company);
+		companyRepository.saveAndFlush(company);
 	}
 
 	public void deleteCompany(int companyID) throws NotExistException {
 		if (!companyRepository.existsById(companyID)) {
 			throw new NotExistException("The company doesn't exists in the sysyem");
 		}
-		List<Coupon> originalCoupons = couponDBDAO.getAllCoupons();
+		List<Coupon> originalCoupons = couponRepository.findAll();
 		for (Coupon coupon : originalCoupons) {
 			if (coupon.getCompanyID() == companyID) {
-				couponDBDAO.deleteCoupon(coupon);
+				couponRepository.delete(coupon);
 			}
 		}
-		companyDBDAO.deleteCompany(companyDBDAO.getOneCompany(companyID));
+		companyRepository.delete(companyRepository.getOne(companyID));
 	}
 
 	public List<Company> getAllCompanies() {
-		return companyDBDAO.getAllCompanies();
+		return companyRepository.findAll();
 	}
 
-	public Company getOneCompany(int companyID) {
-		return companyDBDAO.getOneCompany(companyID);
+	public Company getOneCompany(int companyID) throws NotExistException {
+		if (companyRepository.existsById(companyID) == false) {
+			throw new NotExistException("The company is not exists by this id");
+		}
+		return companyRepository.getOne(companyID);
 	}
 
 	public void addCustomer(Customer customer) throws AlreadyExitsException {
 		if (customerRepository.findByEmail(customer.getEmail()) != null) {
 			throw new AlreadyExitsException("The customer is already exists");
 		}
-		customerDBDAO.addCustomer(customer);
+		customerRepository.save(customer);
 	}
 
 	public void updateCustomer(Customer customer) throws NotAllowedException {
 		if (customerRepository.findById(customer.getId()) == null) {
 			throw new NotAllowedException("The id doesn't exists in the system");
 		}
-		customerDBDAO.updateCustomer(customer);
+		customerRepository.saveAndFlush(customer);
 	}
 
 	public void deleteCustomer(Customer customer) throws NotExistException {
 		if (customerRepository.findById(customer.getId()) == null) {
 			throw new NotExistException("The ID doesn't exists in the system");
 		}
-		customerDBDAO.deleteCustomer(customer);
+		customerRepository.delete(customer);
 	}
 
 	public List<Customer> getAllCustomers() {
-		return customerDBDAO.getAllCustomers();
+		return customerRepository.findAll();
 	}
 
-	public Customer getOneCustomer(int customerID) {
-		return customerDBDAO.getOneCustomer(customerID);
+	public Customer getOneCustomer(int customerID) throws NotExistException {
+		if (!customerRepository.existsById(customerID)) {
+			throw new NotExistException("The customer doesn't exists in the system");
+		}
+		return customerRepository.getOne(customerID);
 	}
 
-	public void addCoupon(Coupon coupon) {
-		couponDBDAO.addCoupon(coupon);
+	public void addCoupon(Coupon coupon) throws NotAllowedException {
+		List<Coupon> coupons = couponRepository.findAll();
+		for (Coupon coupon2 : coupons) {
+			if (coupon2.getCompanyID() == coupon.getCompanyID()) {
+				if (coupon2.getTitle().equals(coupon.getTitle())) {
+					throw new NotAllowedException("the title is the same between the 2 coupons");
+				}
+			}
+		}
+		couponRepository.save(coupon);
 	}
 
-	public void updateCoupon(Coupon coupon) {
-		couponDBDAO.updateCoupon(coupon);
+	public void updateCoupon(Coupon coupon) throws NotExistException {
+		if (couponRepository.existsById(coupon.getId()) == false) {
+			throw new NotExistException("The Coupon doesn't exists in the system");
+		}
+		couponRepository.saveAndFlush(coupon);
 	}
 
-	public void deleteCoupon(Coupon coupon) {
-		couponDBDAO.deleteCoupon(coupon);
+	public void deleteCoupon(Coupon coupon) throws NotExistException {
+		couponRepository.delete(coupon);
 	}
 
 	public List<Coupon> getAllCoupons() {
-		return couponDBDAO.getAllCoupons();
+		return couponRepository.findAll();
 	}
 
-	public Coupon getOneCoupon(int couponID) {
-		return couponDBDAO.getOneCoupon(couponID);
+	public Coupon getOneCoupon(int couponID) throws NotExistException {
+		return couponRepository.getOne(couponID);
 	}
 
 	public Company getCompanyByEmailAndPassword(String email, String password) throws NotExistException {
-		if (companyDBDAO.getCompanyByEmailAndPassword(email, password) == null) {
+		if (companyRepository.findByEmailAndPassword(email, password) == null) {
 			throw new NotExistException("The company doesn't exists by this detailes");
 		}
-		return companyDBDAO.getCompanyByEmailAndPassword(email, password);
+		return companyRepository.findByEmailAndPassword(email, password);
 	}
 
 	public boolean isCouponExists(int id) {
-		return couponDBDAO.isCouponExists(id);
+		return couponRepository.existsById(id);
 	}
 
 	public boolean isCustomerExists(String email, String password) {
-		return customerDBDAO.isCustomerExists(email, password);
+		if (customerRepository.findByEmailAndPassword(email, password) == null) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
 	public String toString() {
-
 		return "AdminService login successfully!!";
-	}
-
-	public void printWrongMessage() {
-		System.out.print("The detailes are wrong, AdminService login failed..");
 	}
 
 }
