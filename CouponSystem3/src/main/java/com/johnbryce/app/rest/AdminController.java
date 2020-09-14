@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.johnbryce.app.beans.Company;
 import com.johnbryce.app.beans.Customer;
@@ -41,7 +40,7 @@ public class AdminController extends ClientController {
 	private TokenManager tokenManager;
 
 	@PostMapping("login")
-	public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) throws LoginException {
+	public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password) throws LoginException {
 		String token = loginManager.login2(email, password, ClientType.Administrator);
 		if (token != null) {
 			LoginResponse loginResponse = new LoginResponse();
@@ -53,8 +52,8 @@ public class AdminController extends ClientController {
 	}
 
 	@PostMapping("addCompany")
-	public ResponseEntity<?> addCompany(@RequestBody Company company,
-			@RequestHeader(name = "Coupon-System-Header") String token) throws AlreadyExitsException {
+	public ResponseEntity<?> addCompany(@RequestBody Company company, @RequestHeader String token)
+			throws AlreadyExitsException {
 		try {
 			tokenManager.isTokenExist(token);
 			adminService.addCompany(company);
@@ -78,9 +77,14 @@ public class AdminController extends ClientController {
 	}
 
 	@DeleteMapping("deleteCompany")
-	public ResponseEntity<Void> deleteCompany(@PathVariable int companyID) throws NotExistException {
-		adminService.deleteCompany(companyID);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	public ResponseEntity<?> deleteCompany(@PathVariable int companyID, @RequestHeader String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			adminService.deleteCompany(companyID);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@GetMapping("GetAllCompanies")
@@ -94,36 +98,69 @@ public class AdminController extends ClientController {
 	}
 
 	@GetMapping("getOneCompany")
-	public ResponseEntity<Company> getOneCompany(@PathVariable int companyID) throws NotExistException {
-		return new ResponseEntity<Company>(adminService.getOneCompany(companyID), HttpStatus.OK);
+	public ResponseEntity<?> getOneCompany(@PathVariable int companyID, @RequestHeader String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			return new ResponseEntity<Company>(adminService.getOneCompany(companyID), HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@PostMapping("addCustomer")
-	public ResponseEntity<Void> addCustomer(@RequestBody Customer customer) throws AlreadyExitsException {
-		adminService.addCustomer(customer);
-		return new ResponseEntity<Void>(HttpStatus.CREATED);
+	public ResponseEntity<?> addCustomer(@RequestBody Customer customer, @RequestHeader String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			adminService.addCustomer(customer);
+			return new ResponseEntity<Void>(HttpStatus.CREATED);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (AlreadyExitsException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@PutMapping("updateCustomer")
-	public ResponseEntity<Void> updateCustomer(@RequestBody Customer customer) throws NotAllowedException {
-		adminService.updateCustomer(customer);
-		return new ResponseEntity<Void>(HttpStatus.OK);
+	public ResponseEntity<?> updateCustomer(@RequestBody Customer customer, @RequestHeader String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			adminService.updateCustomer(customer);
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (NotAllowedException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@DeleteMapping("deleteCustomer")
-	public ResponseEntity<Void> deleteCustomer(@RequestBody Customer customer) throws NotExistException {
-		adminService.deleteCustomer(customer);
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+	public ResponseEntity<?> deleteCustomer(@RequestBody Customer customer, @RequestHeader String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			adminService.deleteCustomer(customer);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@GetMapping("getAllCustomers")
-	public ResponseEntity<List<Customer>> getAllCustomers() {
-		return new ResponseEntity<List<Customer>>(adminService.getAllCustomers(), HttpStatus.OK);
+	public ResponseEntity<?> getAllCustomers(@RequestHeader String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			return new ResponseEntity<List<Customer>>(adminService.getAllCustomers(), HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@GetMapping("getOneCustomer")
-	public ResponseEntity<Customer> getOneCustomer(int customerID) throws NotExistException {
-		return new ResponseEntity<Customer>(adminService.getOneCustomer(customerID), HttpStatus.OK);
+	public ResponseEntity<?> getOneCustomer(@PathVariable int customerID, @RequestHeader String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			return new ResponseEntity<Customer>(adminService.getOneCustomer(customerID), HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
-
 }

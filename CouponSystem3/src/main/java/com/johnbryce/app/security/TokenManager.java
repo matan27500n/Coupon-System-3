@@ -34,6 +34,7 @@ public class TokenManager {
 		return tokensInMemory.getOrDefault(token, null).getClientService();
 	}
 
+	// @Scheduled(fixedRate = 1000 * 60 * 30)
 	public void deleteOldTokens(String token) {
 		for (Map.Entry<String, CustomSession> entry : tokensInMemory.entrySet()) {
 			CustomSession customSession = entry.getValue();
@@ -50,11 +51,5 @@ public class TokenManager {
 			}
 		}
 		throw new NotExistException("The token is not exists in the system");
-
-		// CustomSession customSession = tokensInMemory.get(token);
-		// if (customSession != null) {
-		// return true;
-		// }
-		// throw new NotExistException("Token not found, please try again");
 	}
 }
