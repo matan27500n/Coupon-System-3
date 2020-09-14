@@ -6,10 +6,10 @@ import java.util.HashMap;
 import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.cbor.MappingJackson2CborHttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.johnbryce.app.security.CustomSession;
 
@@ -21,12 +21,12 @@ public class MyConfig {
 		return new HashMap<>();
 	}
 
-	/*@Bean
-	public RestTemplate restTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setMessageConverters((Collections.singletonList(new MappingJackson2CborHttpMessageConverter())));
-		return restTemplate;
-	}*/
+	/*
+	 * @Bean public RestTemplate restTemplate() { RestTemplate restTemplate = new
+	 * RestTemplate();
+	 * restTemplate.setMessageConverters((Collections.singletonList(new
+	 * MappingJackson2CborHttpMessageConverter()))); return restTemplate; }
+	 */
 
 	@Configuration
 	public class MyConfiguration {
@@ -45,5 +45,15 @@ public class MyConfig {
 			source.registerCorsConfiguration("/**", config);
 			return new CorsFilter();
 		}
+
+		/*
+		 * @Bean public WebMvcConfigurer corsConfigurer() { return new
+		 * WebMvcConfigurer() {
+		 * 
+		 * @Override public void addCorsMappings(CorsRegistry registry) {
+		 * registry.addMapping("/**").allowedMethods("GET", "POST", "PUT",
+		 * "DELETE").allowedHeaders("*") .allowedOrigins("http://localhost:4200"); } };
+		 * }
+		 */
 	}
 }

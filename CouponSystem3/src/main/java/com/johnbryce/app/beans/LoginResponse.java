@@ -1,7 +1,6 @@
 package com.johnbryce.app.beans;
 
 import com.johnbryce.app.security.ClientType;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
