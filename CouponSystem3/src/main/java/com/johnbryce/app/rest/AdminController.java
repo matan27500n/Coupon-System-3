@@ -87,13 +87,18 @@ public class AdminController extends ClientController {
 		}
 	}
 
-	@GetMapping("GetAllCompanies")
+	/*@GetMapping("GetAllCompanies")
 	public ResponseEntity<?> getAllCompanies(@RequestHeader String token) {
 		try {
 			tokenManager.isTokenExist(token);
 		} catch (NotExistException e) {
 			return new ResponseEntity<>("you are not allowed, token is not exists", HttpStatus.UNAUTHORIZED);
 		}
+		return new ResponseEntity<List<Company>>(adminService.getAllCompanies(), HttpStatus.OK);
+		
+	}*/
+	@GetMapping("GetAllCompanies")
+	public ResponseEntity<?> getAllCompanies() {
 		return new ResponseEntity<List<Company>>(adminService.getAllCompanies(), HttpStatus.OK);
 	}
 

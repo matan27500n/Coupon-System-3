@@ -1,12 +1,14 @@
 package com.johnbryce.app.config;
 
 import java.util.HashMap;
-import org.apache.catalina.filters.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import com.johnbryce.app.security.CustomSession;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import com.johnbryce.app.security.CustomSession;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 
 @Configuration
 public class MyConfig {
@@ -29,6 +31,6 @@ public class MyConfig {
 		config.addAllowedMethod("PUT");
 		config.addAllowedMethod("DELETE");
 		source.registerCorsConfiguration("/**", config);
-		return new CorsFilter();
+		return new CorsFilter(source);
 	}
 }
