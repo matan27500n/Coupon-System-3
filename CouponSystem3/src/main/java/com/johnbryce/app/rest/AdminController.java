@@ -146,52 +146,33 @@ public class AdminController extends ClientController {
 		}
 	}
 
-	/*
-	 * @DeleteMapping("deleteCustomer") public ResponseEntity<?>
-	 * deleteCustomer(@RequestBody Customer customer, @RequestHeader String token) {
-	 * try { tokenManager.isTokenExist(token);
-	 * adminService.deleteCustomer(customer); return new
-	 * ResponseEntity<Void>(HttpStatus.NO_CONTENT); } catch (NotExistException e) {
-	 * return ResponseEntity.badRequest().body(e.getMessage()); } }
-	 */
-
 	@DeleteMapping("deleteCustomer/{id}")
-	public ResponseEntity<?> deleteCustomer(@PathVariable int id) {
+	public ResponseEntity<?> deleteCustomer(@PathVariable int id,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
+			tokenManager.isTokenExist(token);
 			adminService.deleteCustomer(id);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-		return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-
 	}
-
-	/*
-	 * @GetMapping("getAllCustomers") public ResponseEntity<?>
-	 * getAllCustomers(@RequestHeader String token) { try {
-	 * tokenManager.isTokenExist(token); return new
-	 * ResponseEntity<List<Customer>>(adminService.getAllCustomers(),
-	 * HttpStatus.OK); } catch (NotExistException e) { return
-	 * ResponseEntity.badRequest().body(e.getMessage()); } }
-	 */
 
 	@GetMapping("getAllCustomers")
-	public ResponseEntity<?> getAllCustomers() {
-		return new ResponseEntity<List<Customer>>(adminService.getAllCustomers(), HttpStatus.OK);
+	public ResponseEntity<?> getAllCustomers(@RequestHeader(name = "Coupon-System-Header") String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			return new ResponseEntity<List<Customer>>(adminService.getAllCustomers(), HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
-	/*
-	 * @GetMapping("getOneCustomer") public ResponseEntity<?>
-	 * getOneCustomer(@PathVariable int customerID, @RequestHeader String token) {
-	 * try { tokenManager.isTokenExist(token); return new
-	 * ResponseEntity<Customer>(adminService.getOneCustomer(customerID),
-	 * HttpStatus.OK); } catch (NotExistException e) { return
-	 * ResponseEntity.badRequest().body(e.getMessage()); } }
-	 */
-
 	@GetMapping("getOneCustomer/{id}")
-	public ResponseEntity<?> getOneCustomer(@PathVariable int id) {
+	public ResponseEntity<?> getOneCustomer(@PathVariable int id,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
+			tokenManager.isTokenExist(token);
 			return new ResponseEntity<Customer>(adminService.getOneCustomer(id), HttpStatus.OK);
 		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -199,13 +180,20 @@ public class AdminController extends ClientController {
 	}
 
 	@GetMapping("getAllCoupons")
-	public ResponseEntity<?> getAllCoupons() {
-		return new ResponseEntity<List<Coupon>>(adminService.getAllCoupons(), HttpStatus.OK);
+	public ResponseEntity<?> getAllCoupons(@RequestHeader(name = "Coupon-System-Header") String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			return new ResponseEntity<List<Coupon>>(adminService.getAllCoupons(), HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@GetMapping("getOneCoupon/{id}")
-	public ResponseEntity<?> getOneCoupon(@PathVariable int id) {
+	public ResponseEntity<?> getOneCoupon(@PathVariable int id,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
+			tokenManager.isTokenExist(token);
 			return new ResponseEntity<Coupon>(adminService.getOneCoupon(id), HttpStatus.OK);
 		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());

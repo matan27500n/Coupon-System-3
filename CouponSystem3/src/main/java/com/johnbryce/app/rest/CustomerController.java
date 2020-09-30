@@ -49,25 +49,24 @@ public class CustomerController extends ClientController {
 		return new ResponseEntity<LoginResponse>(HttpStatus.BAD_REQUEST);
 	}
 
-	/*
-	 * @PostMapping("purchaseCoupon") public ResponseEntity<?>
-	 * purchaseCoupon(@RequestBody Coupon coupon, @RequestHeader String token) { try
-	 * { tokenManager.isTokenExist(token); customerService.purchaseCoupon(coupon);
-	 * return new ResponseEntity<Void>(HttpStatus.OK); } catch (NotExistException e)
-	 * { return ResponseEntity.badRequest().body(e.getMessage()); } catch
-	 * (NotAllowedException e) { return
-	 * ResponseEntity.badRequest().body(e.getMessage()); } }
-	 */
-
 	@PutMapping("updateCustomerID/{id}")
-	public ResponseEntity<?> setCustomerId(@PathVariable int id) {
-		this.customerService.setCustomerID(id);
-		return new ResponseEntity<Void>(HttpStatus.OK);
+	public ResponseEntity<?> setCustomerId(@PathVariable int id,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			this.customerService.setCustomerID(id);
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+
 	}
 
 	@PostMapping("purchaseCoupon")
-	public ResponseEntity<?> purchaseCoupon(@RequestBody Coupon coupon) {
+	public ResponseEntity<?> purchaseCoupon(@RequestBody Coupon coupon,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
+			tokenManager.isTokenExist(token);
 			customerService.purchaseCoupon(coupon);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} catch (NotExistException | NotAllowedException e) {
@@ -75,23 +74,21 @@ public class CustomerController extends ClientController {
 		}
 	}
 
-	/*
-	 * @GetMapping("customerCoupons") public ResponseEntity<?>
-	 * getCustomerCoupons(@RequestHeader String token) { try {
-	 * tokenManager.isTokenExist(token); return new
-	 * ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(),
-	 * HttpStatus.OK); } catch (NotExistException e) { return
-	 * ResponseEntity.badRequest().body(e.getMessage()); } }
-	 */
-
 	@GetMapping("customerCoupons/{id}")
-	public ResponseEntity<?> getCustomerCoupons(@PathVariable int id) {
-		customerService.setCustomerID(id);
-		return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(), HttpStatus.OK);
+	public ResponseEntity<?> getCustomerCoupons(@PathVariable int id,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			customerService.setCustomerID(id);
+			return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(), HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
 	@GetMapping("customerCouponsCategory")
-	public ResponseEntity<?> getCustomerCoupons(@PathVariable Category category, @RequestHeader String token) {
+	public ResponseEntity<?> getCustomerCoupons(@PathVariable Category category,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
 			return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(category), HttpStatus.OK);
@@ -101,7 +98,8 @@ public class CustomerController extends ClientController {
 	}
 
 	@GetMapping("customerCouponsMaxPriceS")
-	public ResponseEntity<?> getCustomerCoupons(@PathVariable double maxPrice, @RequestHeader String token) {
+	public ResponseEntity<?> getCustomerCoupons(@PathVariable double maxPrice,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
 			return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(maxPrice), HttpStatus.OK);
@@ -111,7 +109,7 @@ public class CustomerController extends ClientController {
 	}
 
 	@GetMapping("customerDetails")
-	public ResponseEntity<?> getCustomerDetails(@RequestHeader String token) {
+	public ResponseEntity<?> getCustomerDetails(@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
 			return new ResponseEntity<Customer>(customerService.getCustomerDetailes(), HttpStatus.OK);
@@ -121,8 +119,14 @@ public class CustomerController extends ClientController {
 	}
 
 	@GetMapping("getCustomerByEmailAndPassword/{email}/{password}")
-	public ResponseEntity<?> getCustomerByEmailAndPassword(@PathVariable String email, @PathVariable String password) {
-		return new ResponseEntity<Customer>(customerService.getCustomerByEmailAndPassword(email, password),
-				HttpStatus.OK);
+	public ResponseEntity<?> getCustomerByEmailAndPassword(@PathVariable String email, @PathVariable String password,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			return new ResponseEntity<Customer>(customerService.getCustomerByEmailAndPassword(email, password),
+					HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 }
