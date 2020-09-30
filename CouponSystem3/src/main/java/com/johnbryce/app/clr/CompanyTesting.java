@@ -62,6 +62,8 @@ public class CompanyTesting implements CommandLineRunner {
 		// get one company
 		System.out.println("Get company 1:");
 		printUtils.printOneCompanyWithOutCoupon(adminService.getOneCompany(1));
+		
+		System.out.println("The id of company cola :" + companyService.getCompanyIdByEmailAndPassword("coca@gmail.com", "1111"));
 
 		// get company by email and password
 		System.out.println("Get company by email and password:");

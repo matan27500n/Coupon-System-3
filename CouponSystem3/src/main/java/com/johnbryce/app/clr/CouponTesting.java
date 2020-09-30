@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import com.johnbryce.app.beans.Category;
 import com.johnbryce.app.beans.Company;
 import com.johnbryce.app.beans.Coupon;
-import com.johnbryce.app.beans.Customer;
 import com.johnbryce.app.exceptions.NotAllowedException;
 import com.johnbryce.app.exceptions.NotExistException;
 import com.johnbryce.app.schedule.CouponExpirationDailyJob;
@@ -113,7 +112,7 @@ public class CouponTesting implements CommandLineRunner {
 		printUtils.printOneCoupon(c1);
 
 		// delete coupon
-		adminService.deleteCoupon(c4);
+		adminService.deleteCoupon(c4.getId());
 		System.out.println("coupons after delete coupon " + c4.getId() + ":");
 		printUtils.printCoupons(adminService.getAllCoupons());
 
@@ -133,17 +132,17 @@ public class CouponTesting implements CommandLineRunner {
 		printUtils.printCustomers(adminService.getAllCustomers());
 
 		// delete coupon and his purchases
-		List<Customer> customers = customerService.getAllCustomers();
-		for (Customer customer : customers) {
-			if (customer.getCoupons() == c1) {
-				customer.getCoupons().remove(c1);
-				adminService.updateCustomer(customer);
-			}
-		}
-		adminService.deleteCoupon(c1);
-		customerService.deleteCustomersVScoupons(c1.getId());
-		System.out.println("Print customers details after deleting coupons:");
-		printUtils.printCustomers(adminService.getAllCustomers());
+		// List<Customer> customers = customerService.getAllCustomers();
+		// for (Customer customer : customers) {
+		// if (customer.getCoupons() == c1) {
+		// customer.getCoupons().remove(c1);
+		// adminService.updateCustomer(customer);
+		// }
+		// }
+		// adminService.deleteCoupon(c1.getId());
+		// customerService.deleteCustomersVScoupons(c1.getId());
+		// System.out.println("Print customers details after deleting coupons:");
+		// printUtils.printCustomers(adminService.getAllCustomers());
 
 		// login manager successfully
 		printUtils.seperateLines("Login Manager:");

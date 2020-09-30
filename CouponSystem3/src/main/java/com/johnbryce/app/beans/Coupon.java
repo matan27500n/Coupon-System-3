@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +30,9 @@ public class Coupon {
 	private Category categoryID;
 	private String title;
 	private String description;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date start_date;
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private Date end_date;
 	private int amount;
 	private double price;

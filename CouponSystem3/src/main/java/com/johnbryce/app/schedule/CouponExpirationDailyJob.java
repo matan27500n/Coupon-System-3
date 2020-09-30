@@ -25,7 +25,7 @@ public class CouponExpirationDailyJob {
 			if (coupons.get(i).getEnd_date().before(new Date())) {
 				System.out.println("Going to delete coupon: " + coupons.get(i).getId());
 				printUtils.printOneCoupon(coupons.get(i));
-				adminService.deleteCoupon(coupons.get(i));
+				adminService.deleteCoupon(coupons.get(i).getId());
 			}
 		}
 	}

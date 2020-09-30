@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,7 @@ public class CustomerController extends ClientController {
 	@Autowired
 	private TokenManager tokenManager;
 
-	@PostMapping("login")
+	@PostMapping("login/{email}/{password}")
 	public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password) throws LoginException {
 		String token = loginManager.login2(email, password, ClientType.Customer);
 		if (token != null) {
@@ -48,27 +49,45 @@ public class CustomerController extends ClientController {
 		return new ResponseEntity<LoginResponse>(HttpStatus.BAD_REQUEST);
 	}
 
+	/*
+	 * @PostMapping("purchaseCoupon") public ResponseEntity<?>
+	 * purchaseCoupon(@RequestBody Coupon coupon, @RequestHeader String token) { try
+	 * { tokenManager.isTokenExist(token); customerService.purchaseCoupon(coupon);
+	 * return new ResponseEntity<Void>(HttpStatus.OK); } catch (NotExistException e)
+	 * { return ResponseEntity.badRequest().body(e.getMessage()); } catch
+	 * (NotAllowedException e) { return
+	 * ResponseEntity.badRequest().body(e.getMessage()); } }
+	 */
+
+	@PutMapping("updateCustomerID/{id}")
+	public ResponseEntity<?> setCustomerId(@PathVariable int id) {
+		this.customerService.setCustomerID(id);
+		return new ResponseEntity<Void>(HttpStatus.OK);
+	}
+
 	@PostMapping("purchaseCoupon")
-	public ResponseEntity<?> purchaseCoupon(@RequestBody Coupon coupon, @RequestHeader String token) {
+	public ResponseEntity<?> purchaseCoupon(@RequestBody Coupon coupon) {
 		try {
-			tokenManager.isTokenExist(token);
 			customerService.purchaseCoupon(coupon);
 			return new ResponseEntity<Void>(HttpStatus.OK);
-		} catch (NotExistException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		} catch (NotAllowedException e) {
+		} catch (NotExistException | NotAllowedException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
 
-	@GetMapping("customerCouponsS")
-	public ResponseEntity<?> getCustomerCoupons(@RequestHeader String token) {
-		try {
-			tokenManager.isTokenExist(token);
-			return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(), HttpStatus.OK);
-		} catch (NotExistException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	/*
+	 * @GetMapping("customerCoupons") public ResponseEntity<?>
+	 * getCustomerCoupons(@RequestHeader String token) { try {
+	 * tokenManager.isTokenExist(token); return new
+	 * ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(),
+	 * HttpStatus.OK); } catch (NotExistException e) { return
+	 * ResponseEntity.badRequest().body(e.getMessage()); } }
+	 */
+
+	@GetMapping("customerCoupons/{id}")
+	public ResponseEntity<?> getCustomerCoupons(@PathVariable int id) {
+		customerService.setCustomerID(id);
+		return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(), HttpStatus.OK);
 	}
 
 	@GetMapping("customerCouponsCategory")
@@ -99,5 +118,11 @@ public class CustomerController extends ClientController {
 		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
+	}
+
+	@GetMapping("getCustomerByEmailAndPassword/{email}/{password}")
+	public ResponseEntity<?> getCustomerByEmailAndPassword(@PathVariable String email, @PathVariable String password) {
+		return new ResponseEntity<Customer>(customerService.getCustomerByEmailAndPassword(email, password),
+				HttpStatus.OK);
 	}
 }

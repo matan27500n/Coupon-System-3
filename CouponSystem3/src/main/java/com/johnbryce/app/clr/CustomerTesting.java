@@ -63,7 +63,7 @@ public class CustomerTesting implements CommandLineRunner {
 		printUtils.printOneCustomerWithOutCoupon(c1);
 
 		// delete customer
-		adminService.deleteCustomer(c5);
+		adminService.deleteCustomer(c5.getId());
 		System.out.println("customers detailes after deleting customer " + c5.getId() + ":");
 		printUtils.printCustomersWithOutCoupon(adminService.getAllCustomers());
 

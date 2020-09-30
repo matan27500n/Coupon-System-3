@@ -56,11 +56,14 @@ public class CompanyService extends ClientService {
 		companyRepository.saveAndFlush(companyRepository.getOne(couponRepository.getOne(couponID).getCompanyID()));
 	}
 
-	public List<Coupon> getAllCompanyCoupons() {
+	public List<Coupon> getCompanyCoupons() {
+		System.out.println("The company id !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		System.out.println(companyID);
 		return couponRepository.findByCompanyID(companyID);
 	}
 
 	public List<Coupon> getCompanyCoupons(Category category) {
+		System.out.println(couponRepository.findByCategoryID(category));
 		return couponRepository.findByCategoryID(category);
 	}
 
@@ -70,6 +73,10 @@ public class CompanyService extends ClientService {
 
 	public Company getCompanyDetailes() {
 		return companyRepository.getOne(companyID);
+	}
+
+	public Company getCompanyByEmailAndPassword(String email, String password) {
+		return companyRepository.findByEmailAndPassword(email, password);
 	}
 
 	public int getCompanyIdByEmailAndPassword(String email, String password) {

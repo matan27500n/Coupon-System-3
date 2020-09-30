@@ -25,6 +25,9 @@ public class AdminService extends ClientService {
 		if (companyRepository.findByNameAndEmail(company.getName(), company.getEmail()) != null) {
 			throw new AlreadyExitsException();
 		}
+		if (companyRepository.findByEmail(company.getEmail()) != null) {
+			throw new AlreadyExitsException();
+		}
 		companyRepository.save(company);
 	}
 
@@ -77,11 +80,11 @@ public class AdminService extends ClientService {
 		customerRepository.saveAndFlush(customer);
 	}
 
-	public void deleteCustomer(Customer customer) throws NotExistException {
-		if (customerRepository.findById(customer.getId()) == null) {
+	public void deleteCustomer(int id) throws NotExistException {
+		if (customerRepository.getOne(id) == null) {
 			throw new NotExistException("The ID doesn't exists in the system");
 		}
-		customerRepository.delete(customer);
+		customerRepository.delete(customerRepository.getOne(id));
 	}
 
 	public List<Customer> getAllCustomers() {
@@ -114,8 +117,8 @@ public class AdminService extends ClientService {
 		couponRepository.saveAndFlush(coupon);
 	}
 
-	public void deleteCoupon(Coupon coupon) throws NotExistException {
-		couponRepository.delete(coupon);
+	public void deleteCoupon(int id) throws NotExistException {
+		couponRepository.delete(couponRepository.getOne(id));
 	}
 
 	public List<Coupon> getAllCoupons() {

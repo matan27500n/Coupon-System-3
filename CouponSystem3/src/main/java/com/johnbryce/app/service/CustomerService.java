@@ -32,6 +32,7 @@ public class CustomerService extends ClientService {
 		if (couponRepository.existsById(coupon.getId()) == false) {
 			throw new NotExistException("The couponID doesn't exists in the system");
 		}
+		System.out.println("the customer id: " + customerID);
 		Customer customer = customerRepository.getOne(customerID);
 		List<Coupon> customerCoupons = customer.getCoupons();
 		for (Coupon coupon2 : customerCoupons) {
@@ -90,6 +91,10 @@ public class CustomerService extends ClientService {
 
 	public int getCustomerIdByEmailAndPassword(String email, String password) {
 		return customerRepository.findByEmailAndPassword(email, password).getId();
+	}
+
+	public Customer getCustomerByEmailAndPassword(String email, String password) {
+		return customerRepository.findByEmailAndPassword(email, password);
 	}
 
 	@Override
