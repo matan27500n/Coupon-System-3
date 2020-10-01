@@ -126,7 +126,7 @@ public class CouponTesting implements CommandLineRunner {
 		customerService.purchaseCoupon(c1);
 		printUtils.printOneCustomer(adminService.getOneCustomer(1));
 		customerService.setCustomerID(2);
-		customerService.purchaseCoupon(c1);
+		customerService.purchaseCoupon(c3);
 		printUtils.printOneCustomer(adminService.getOneCustomer(2));
 		System.out.println();
 		printUtils.printCustomers(adminService.getAllCustomers());
