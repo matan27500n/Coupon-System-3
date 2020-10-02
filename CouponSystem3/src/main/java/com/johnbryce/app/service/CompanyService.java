@@ -57,8 +57,6 @@ public class CompanyService extends ClientService {
 	}
 
 	public List<Coupon> getCompanyCoupons() {
-		System.out.println("The company id !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		System.out.println(companyID);
 		return couponRepository.findByCompanyID(companyID);
 	}
 

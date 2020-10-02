@@ -2,6 +2,7 @@ package com.johnbryce.app.beans;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -30,12 +31,13 @@ public class Coupon {
 	private Category categoryID;
 	private String title;
 	private String description;
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date start_date;
-	@JsonFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date end_date;
 	private int amount;
 	private double price;
+	@Column(length = 100000)
 	private String image;
 
 	public Coupon(int company_id, Category category_id, String title, String description, Date start_date,

@@ -61,11 +61,17 @@ public class AdminController extends ClientController {
 			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
+			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + 30) {
+				tokenManager.deleteOldTokens(token);
+				throw new NotAllowedException("the token is not available any more");
+			}
 			adminService.addCompany(company);
 			return new ResponseEntity<Company>(HttpStatus.CREATED);
 		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		} catch (AlreadyExitsException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (NotAllowedException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
@@ -97,9 +103,13 @@ public class AdminController extends ClientController {
 	}
 
 	@GetMapping("GetAllCompanies")
-	public ResponseEntity<?> getAllCompanies(@RequestHeader(name = "Coupon-System-Header") String token) {
+	public ResponseEntity<?> getAllCompanies(@RequestHeader(name = "Coupon-System-Header") String token)
+			throws NotAllowedException {
 		try {
 			tokenManager.isTokenExist(token);
+			if (tokenManager.getTimestamp(token) == tokenManager.getTimestamp(token) * 1000) {
+				throw new NotAllowedException("the token is not available any more");
+			}
 		} catch (NotExistException e) {
 			return new ResponseEntity<>("you are not allowed, token is not exists", HttpStatus.UNAUTHORIZED);
 		}
