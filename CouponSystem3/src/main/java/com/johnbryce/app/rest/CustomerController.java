@@ -31,6 +31,8 @@ import lombok.NoArgsConstructor;
 @CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*")
 public class CustomerController extends ClientController {
 
+	private final long milliseconds = 1800000;
+
 	@Autowired
 	private LoginManager loginManager;
 
@@ -54,12 +56,17 @@ public class CustomerController extends ClientController {
 			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
+			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + milliseconds) {
+				tokenManager.deleteOldTokens(token);
+				throw new NotAllowedException("the token is not available any more");
+			}
 			this.customerService.setCustomerID(id);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (NotAllowedException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
 		}
-
 	}
 
 	@PostMapping("purchaseCoupon")
@@ -67,6 +74,10 @@ public class CustomerController extends ClientController {
 			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
+			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + milliseconds) {
+				tokenManager.deleteOldTokens(token);
+				throw new NotAllowedException("the token is not available any more");
+			}
 			customerService.purchaseCoupon(coupon);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} catch (NotExistException | NotAllowedException e) {
@@ -79,9 +90,13 @@ public class CustomerController extends ClientController {
 			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
+			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + milliseconds) {
+				tokenManager.deleteOldTokens(token);
+				throw new NotAllowedException("the token is not available any more");
+			}
 			customerService.setCustomerID(id);
 			return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(), HttpStatus.OK);
-		} catch (NotExistException e) {
+		} catch (NotExistException | NotAllowedException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
@@ -91,8 +106,12 @@ public class CustomerController extends ClientController {
 			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
+			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + milliseconds) {
+				tokenManager.deleteOldTokens(token);
+				throw new NotAllowedException("the token is not available any more");
+			}
 			return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(category), HttpStatus.OK);
-		} catch (NotExistException e) {
+		} catch (NotExistException | NotAllowedException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
@@ -102,8 +121,12 @@ public class CustomerController extends ClientController {
 			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
+			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + milliseconds) {
+				tokenManager.deleteOldTokens(token);
+				throw new NotAllowedException("the token is not available any more");
+			}
 			return new ResponseEntity<List<Coupon>>(customerService.getCustomerCoupons(maxPrice), HttpStatus.OK);
-		} catch (NotExistException e) {
+		} catch (NotExistException | NotAllowedException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
@@ -112,8 +135,12 @@ public class CustomerController extends ClientController {
 	public ResponseEntity<?> getCustomerDetails(@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
+			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + milliseconds) {
+				tokenManager.deleteOldTokens(token);
+				throw new NotAllowedException("the token is not available any more");
+			}
 			return new ResponseEntity<Customer>(customerService.getCustomerDetailes(), HttpStatus.OK);
-		} catch (NotExistException e) {
+		} catch (NotExistException | NotAllowedException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
@@ -123,9 +150,13 @@ public class CustomerController extends ClientController {
 			@RequestHeader(name = "Coupon-System-Header") String token) {
 		try {
 			tokenManager.isTokenExist(token);
+			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + milliseconds) {
+				tokenManager.deleteOldTokens(token);
+				throw new NotAllowedException("the token is not available any more");
+			}
 			return new ResponseEntity<Customer>(customerService.getCustomerByEmailAndPassword(email, password),
 					HttpStatus.OK);
-		} catch (NotExistException e) {
+		} catch (NotExistException | NotAllowedException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
