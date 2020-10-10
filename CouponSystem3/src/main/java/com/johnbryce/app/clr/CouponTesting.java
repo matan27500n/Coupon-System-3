@@ -1,6 +1,7 @@
 package com.johnbryce.app.clr;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +45,12 @@ public class CouponTesting implements CommandLineRunner {
 			throw new NotExistException(
 					"The company is not exists in the system, you canno't add coupon to the company");
 		}
+		adminService.addCoupon(coupon);
 		Company company = adminService.getOneCompany(coupon.getCompanyID());
 		company.addCoupon(coupon);
-		adminService.addCoupon(coupon);
+		company.setCoupons(Arrays.asList(coupon));
+		adminService.updateCompany(company);
+
 	}
 
 	@SuppressWarnings("deprecation")
@@ -73,7 +77,7 @@ public class CouponTesting implements CommandLineRunner {
 		// create the coupons
 		List<Coupon> coupons = new ArrayList<>();
 		Coupon c1 = new Coupon(1, Category.Drinks, "sale", "30%", Utilities.convertUtilDateToSQL(d1),
-				Utilities.convertUtilDateToSQL(d2), 10, 10,
+				Utilities.convertUtilDateToSQL(d2), 15, 15,
 				"https://supply.layam.com/pub/media/catalog/product/cache/e4d64343b1bc593f1c5348fe05efa4a6/3/7/3720208_1.jpg");
 		addCouponToCompany(c1);
 		coupons.add(c1);
@@ -97,6 +101,11 @@ public class CouponTesting implements CommandLineRunner {
 				"https://d3m9l0v76dty0.cloudfront.net/system/photos/5118518/original/6eb9e4dd96bacf33d7006fc17d450d92.jpg");
 		addCouponToCompany(c5);
 		coupons.add(c5);
+		Coupon c6 = new Coupon(5, Category.Fast_food, "15%", "15% discount on all the menu",
+				Utilities.convertUtilDateToSQL(d5), Utilities.convertUtilDateToSQL(d6), 89, 19,
+				"https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Burger_King_logo.svg/1200px-Burger_King_logo.svg.png");
+		addCouponToCompany(c6);
+		coupons.add(c6);
 
 		System.out.println("Companies full details:");
 		printUtils.printCompanies(coupons, adminService.getAllCompanies());
@@ -117,9 +126,11 @@ public class CouponTesting implements CommandLineRunner {
 		printUtils.printOneCoupon(c1);
 
 		// delete coupon
-		adminService.deleteCoupon(c4.getId());
-		System.out.println("coupons after delete coupon " + c4.getId() + ":");
-		printUtils.printCoupons(adminService.getAllCoupons());
+		/*
+		 * adminService.deleteCoupon(c4.getId());
+		 * System.out.println("coupons after delete coupon " + c4.getId() + ":");
+		 * printUtils.printCoupons(adminService.getAllCoupons());
+		 */
 
 		// get one coupon
 		System.out.println("get coupon 3:");
@@ -153,7 +164,7 @@ public class CouponTesting implements CommandLineRunner {
 		printUtils.seperateLines("Login Manager:");
 		System.out.println("Login manager success:");
 		System.out.println(loginManager.login("admin@admin.com", "admin", ClientType.Administrator));
-		System.out.println(loginManager.login("topaz12@gmail.com", "topazTheQuine123", ClientType.Customer));
+		System.out.println(loginManager.login("topaz12@gmail.com", "0000", ClientType.Customer));
 		System.out.println(loginManager.login("pepsi@gmail.com", "1234", ClientType.Company));
 
 		System.out.println();

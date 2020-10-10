@@ -54,10 +54,10 @@ public class CompanyTesting implements CommandLineRunner {
 		System.out.println("company exists? " + adminService.isCompanyExists(11));
 
 		// delete company
-		adminService.deleteCompany(c5.getId());
+		/*adminService.deleteCompany(c5.getId());
 		System.out.println();
 		System.out.println("The companies after deleting company " + c5.getId() + " :");
-		printUtils.printCompaniesWithOutCoupon(adminService.getAllCompanies());
+		printUtils.printCompaniesWithOutCoupon(adminService.getAllCompanies());*/
 
 		// get one company
 		System.out.println("Get company 1:");

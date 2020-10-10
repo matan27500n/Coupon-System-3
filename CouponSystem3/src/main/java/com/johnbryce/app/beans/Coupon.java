@@ -31,9 +31,9 @@ public class Coupon {
 	private Category categoryID;
 	private String title;
 	private String description;
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	private Date start_date;
-	@JsonFormat(pattern = "yyyy-MM-dd")
+	@JsonFormat(pattern = "dd-MM-yyyy")
 	private Date end_date;
 	private int amount;
 	private double price;

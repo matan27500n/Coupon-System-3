@@ -1,6 +1,9 @@
 package com.johnbryce.app.service;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import com.johnbryce.app.beans.Company;
@@ -20,6 +23,9 @@ import com.johnbryce.app.beans.Category;
 public class CompanyService extends ClientService {
 
 	private int companyID;
+
+	@Autowired
+	private AdminService adminService;
 
 	@Override
 	public boolean login(String email, String password) {
@@ -53,20 +59,41 @@ public class CompanyService extends ClientService {
 			throw new NotExistException("The Coupon doesn't exists in the system");
 		}
 		couponRepository.delete(couponRepository.getOne(couponID));
-		companyRepository.saveAndFlush(companyRepository.getOne(couponRepository.getOne(couponID).getCompanyID()));
+		// companyRepository.saveAndFlush(companyRepository.getOne(couponRepository.getOne(couponID).getCompanyID()));
+	}
+
+	public Coupon getOneCoupon(int couponID) throws NotExistException {
+		return couponRepository.getOne(couponID);
 	}
 
 	public List<Coupon> getCompanyCoupons() {
 		return couponRepository.findByCompanyID(companyID);
 	}
 
-	public List<Coupon> getCompanyCoupons(Category category) {
-		System.out.println(couponRepository.findByCategoryID(category));
-		return couponRepository.findByCategoryID(category);
+	public List<Coupon> getCompanyCoupons(Category category) throws NotExistException {
+		System.out.println("Company id: " + companyID);
+		System.out.println("category: " + category);
+		List<Coupon> coupons = adminService.getAllCoupons();
+		System.out.println("coupons length: " + coupons.size());
+		List<Coupon> temp = new ArrayList<Coupon>();
+		for (int i = 0; i < coupons.size(); i++) {
+			if (coupons.get(i).getCategoryID().equals(category) && coupons.get(i).getCompanyID() == companyID) {
+				temp.add(coupons.get(i));
+			}
+		}
+		return temp;
 	}
 
 	public List<Coupon> getCompanyCoupons(double maxPrice) {
-		return couponRepository.findByPriceLessThan(maxPrice);
+		// List<Coupon> coupons = adminService.getAllCoupons();
+		List<Coupon> coupons = couponRepository.findAll();
+		List<Coupon> temp = new ArrayList<Coupon>();
+		for (int i = 0; i < coupons.size(); i++) {
+			if (coupons.get(i).getPrice() < maxPrice && coupons.get(i).getCompanyID() == companyID) {
+				temp.add(coupons.get(i));
+			}
+		}
+		return temp;
 	}
 
 	public Company getCompanyDetailes() {

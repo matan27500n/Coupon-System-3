@@ -1,5 +1,6 @@
 package com.johnbryce.app.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.johnbryce.app.beans.Company;
@@ -84,6 +85,9 @@ public class AdminService extends ClientService {
 		if (customerRepository.getOne(id) == null) {
 			throw new NotExistException("The ID doesn't exists in the system");
 		}
+		Customer customer = customerRepository.getOne(id);
+		customer.setCoupons(new ArrayList<Coupon>());
+		customerRepository.saveAndFlush(customer);
 		customerRepository.delete(customerRepository.getOne(id));
 	}
 

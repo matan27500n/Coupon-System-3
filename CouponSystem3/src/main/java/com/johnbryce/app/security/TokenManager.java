@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.johnbryce.app.exceptions.NotExistException;
+import com.johnbryce.app.rest.AdminController;
 import com.johnbryce.app.service.ClientService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,9 +25,13 @@ public class TokenManager {
 	@Autowired
 	private HashMap<String, CustomSession> tokensInMemory;
 
+	@Autowired
+	private AdminController adminController;
+
 	public String addToken(ClientService clientService) {
 		String token = UUID.randomUUID().toString();
 		tokensInMemory.put(token, new CustomSession(clientService, System.currentTimeMillis()));
+		System.out.println("tokensInMemory: " + tokensInMemory);
 		return token;
 	}
 
@@ -38,16 +43,6 @@ public class TokenManager {
 		return tokensInMemory.getOrDefault(token, null).getClientService();
 	}
 
-	// @Scheduled(fixedRate = 1000 * 60 * 30)
-	public void deleteOldTokens(String token) {
-		for (Map.Entry<String, CustomSession> entry : tokensInMemory.entrySet()) {
-			CustomSession customSession = entry.getValue();
-			if (tokensInMemory.containsKey(token)) {
-				tokensInMemory.remove(token, customSession);
-			}
-		}
-	}
-
 	public boolean isTokenExist(String token) throws NotExistException {
 		for (Map.Entry<String, CustomSession> entry : tokensInMemory.entrySet()) {
 			if (entry.getKey().equals(token)) {
@@ -55,5 +50,9 @@ public class TokenManager {
 			}
 		}
 		throw new NotExistException("The token is not exists in the system");
+	}
+
+	public void removeToken(String token) {
+		tokensInMemory.remove(token);
 	}
 }

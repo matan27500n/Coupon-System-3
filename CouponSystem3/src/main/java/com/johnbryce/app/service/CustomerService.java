@@ -1,5 +1,6 @@
 package com.johnbryce.app.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.springframework.context.annotation.Scope;
@@ -63,22 +64,25 @@ public class CustomerService extends ClientService {
 
 	public List<Coupon> getCustomerCoupons(Category category) {
 		List<Coupon> coupons = customerRepository.getOne(customerID).getCoupons();
-		for (Coupon coupon : coupons) {
-			if (coupon.getCategoryID() != category) {
-				coupons.remove(coupon);
+		List<Coupon> temp = new ArrayList<Coupon>();
+		for (int i = 0; i < coupons.size(); i++) {
+			if (coupons.get(i).getCategoryID().equals(category)) {
+				temp.add(coupons.get(i));
 			}
 		}
-		return coupons;
+
+		return temp;
 	}
 
 	public List<Coupon> getCustomerCoupons(double maxPrice) {
 		List<Coupon> coupons = customerRepository.getOne(customerID).getCoupons();
-		for (Coupon coupon : coupons) {
-			if (coupon.getPrice() > maxPrice) {
-				coupons.remove(coupon);
+		List<Coupon> temp = new ArrayList<Coupon>();
+		for (int i = 0; i < coupons.size(); i++) {
+			if (coupons.get(i).getPrice() < maxPrice) {
+				temp.add(coupons.get(i));
 			}
 		}
-		return coupons;
+		return temp;
 	}
 
 	public Customer getCustomerDetailes() {

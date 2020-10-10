@@ -28,11 +28,11 @@ public class CustomerTesting implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		printUtils.seperateLines("Customer Methods:");
 
-		Customer c1 = new Customer("Topaz", "Dali", "topazdali@gmail.com", "topazTheQuine123");
-		Customer c2 = new Customer("Matan", "Bruchim", "matanbru@gmail.com", "matanbru123");
-		Customer c3 = new Customer("Yossi", "Shakarof", "yossishak@gmail.com", "yossishak123");
-		Customer c4 = new Customer("Lidor", "Mualem", "lidormua@gmail.com", "lidormua123");
-		Customer c5 = new Customer("Barel", "Amar", "barelamar@gmail.con", "barel123");
+		Customer c1 = new Customer("Topaz", "Dali", "topaz@gmail.com", "0000");
+		Customer c2 = new Customer("Matan", "Bruchim", "matan@gmail.com", "1111");
+		Customer c3 = new Customer("Yossi", "Shakarof", "yossi@gmail.com", "2222");
+		Customer c4 = new Customer("Lidor", "Mualem", "lidor@gmail.com", "3333");
+		Customer c5 = new Customer("Barel", "Amar", "barel@gmail.con", "4444");
 		List<Customer> custoArrays = Arrays.asList(c1, c2, c3, c4, c5);
 
 		// adding the customer
@@ -63,9 +63,9 @@ public class CustomerTesting implements CommandLineRunner {
 		printUtils.printOneCustomerWithOutCoupon(c1);
 
 		// delete customer
-		adminService.deleteCustomer(c5.getId());
+		/*adminService.deleteCustomer(c5.getId());
 		System.out.println("customers detailes after deleting customer " + c5.getId() + ":");
-		printUtils.printCustomersWithOutCoupon(adminService.getAllCustomers());
+		printUtils.printCustomersWithOutCoupon(adminService.getAllCustomers());*/
 
 		// get one customer
 		System.out.println("get customer 3:");
