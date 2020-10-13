@@ -1,19 +1,15 @@
 package com.johnbryce.app.schedule;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import com.johnbryce.app.rest.AdminController;
-import com.johnbryce.app.rest.ClientController;
 import com.johnbryce.app.security.CustomSession;
 import com.johnbryce.app.security.TokenManager;
-
 import lombok.Getter;
 
 @Component
@@ -26,28 +22,16 @@ public class TokenExpiredJob {
 	@Autowired
 	private TokenManager tokenManager;
 
-	/*
-	 * @Scheduled(fixedRate = 1000 * 60) public void deleteOldTokens() { for
-	 * (Map.Entry<String, CustomSession> entry : tokensInMemory.entrySet()) { if
-	 * (entry.getValue() == null) { return; } CustomSession customSession =
-	 * entry.getValue(); String token = entry.getKey(); if
-	 * (tokensInMemory.containsKey(token)) { tokensInMemory.remove(token,
-	 * customSession); System.out.println("deleted old token"); } }
-	 * 
-	 * }
-	 */
-
-	@Scheduled(fixedRate = 1000 * 60 * 30)
-	public void removeExpiredToken() {
+	@Scheduled(fixedRate = 1000 * 60 * 5)
+	public void removeExpiredCoupons() {
+		System.out.println(Arrays.asList(tokensInMemory));
 		for (Map.Entry<String, CustomSession> entry : tokensInMemory.entrySet()) {
-			CustomSession customSession = entry.getValue();
-			// Date now = new Date(System.currentTimeMillis() +
-			// TimeUnit.MINUTES.toMillis(30));
-			String token = entry.getKey();
-			// Date other = new Date(tokenManager.getTimestamp(token));
-			if (System.currentTimeMillis() >= tokenManager.getTimestamp(token) + TimeUnit.MINUTES.toMillis(30)) {
-				tokensInMemory.remove(token, customSession);
-				System.out.println("deleting token successfully");
+			Date now = new Date(entry.getValue().getDate() + TimeUnit.MINUTES.toMillis(30));
+			Date other = new Date(System.currentTimeMillis());
+			if (now.before(other)) {
+				tokensInMemory.remove(entry.getKey());
+				System.out.println("deleting..");
+				System.out.println(Arrays.asList(tokensInMemory));
 			}
 		}
 
