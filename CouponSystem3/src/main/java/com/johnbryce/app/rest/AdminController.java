@@ -62,6 +62,7 @@ public class AdminController extends ClientController {
 	public ResponseEntity<?> logout(@RequestHeader(name = "Coupon-System-Header") String token) {
 		tokenManager.removeToken(token);
 		System.out.println("Remove token successfully");
+		System.out.println(tokenManager.getTokensInMemory());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 

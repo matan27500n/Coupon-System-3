@@ -29,6 +29,13 @@ public class CustomerService extends ClientService {
 		return true;
 	}
 
+	public void updateCustomer(Customer customer) throws NotAllowedException {
+		if (customerRepository.findById(customer.getId()) == null) {
+			throw new NotAllowedException("The id doesn't exists in the system");
+		}
+		customerRepository.saveAndFlush(customer);
+	}
+
 	public void purchaseCoupon(Coupon coupon) throws NotExistException, NotAllowedException {
 		if (couponRepository.existsById(coupon.getId()) == false) {
 			throw new NotExistException("The couponID doesn't exists in the system");
@@ -54,8 +61,20 @@ public class CustomerService extends ClientService {
 		customerRepository.saveAndFlush(customer);
 	}
 
-	public void deleteCustomersVScoupons(int couponID) {
-		couponRepository.deleteCouponVsCustomers(couponID);
+	public void deleteCouponPurchase(int couponID) throws NotExistException {
+		if (couponRepository.existsById(couponID) == false) {
+			throw new NotExistException("The Coupon doesn't exists in the system");
+		}
+		Customer customer = customerRepository.getOne(customerID);
+		List<Coupon> customerCoupons = customer.getCoupons();
+		for (Coupon coupon : customerCoupons) {
+			if (coupon.getId() == couponID) {
+				customerCoupons.remove(coupon);
+				customer.setCoupons(customerCoupons);
+				customerRepository.saveAndFlush(customer);
+				break;
+			}
+		}
 	}
 
 	public List<Coupon> getCustomerCoupons() {

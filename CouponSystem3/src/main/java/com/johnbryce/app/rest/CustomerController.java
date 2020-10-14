@@ -62,6 +62,20 @@ public class CustomerController extends ClientController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
+	@PutMapping("updateCustomer")
+	public ResponseEntity<?> updateCustomer(@RequestBody Customer customer,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			adminService.updateCustomer(customer);
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (NotAllowedException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+
 	@PutMapping("updateCustomerID/{id}")
 	public ResponseEntity<?> setCustomerId(@PathVariable int id,
 			@RequestHeader(name = "Coupon-System-Header") String token) {
@@ -82,6 +96,18 @@ public class CustomerController extends ClientController {
 			customerService.purchaseCoupon(coupon);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} catch (NotExistException | NotAllowedException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
+
+	@DeleteMapping("deleteCoupon/{id}")
+	public ResponseEntity<?> deleteCouponPurchase(@PathVariable int id,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			customerService.deleteCouponPurchase(id);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}

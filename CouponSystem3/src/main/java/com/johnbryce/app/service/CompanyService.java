@@ -35,6 +35,17 @@ public class CompanyService extends ClientService {
 		return true;
 	}
 
+	public void updateCompany(Company company) throws NotExistException, NotAllowedException {
+		if (companyRepository.findById(company.getId()) == null) {
+			throw new NotExistException("The id doesn't exists");
+		}
+		Company company2 = companyRepository.getOne(company.getId());
+		if (!company.getName().equals(company2.getName())) {
+			throw new NotAllowedException("You are not allowed to change name company");
+		}
+		companyRepository.saveAndFlush(company);
+	}
+
 	public void addCoupon(Coupon coupon) throws NotAllowedException {
 		List<Coupon> coupons = couponRepository.findAll();
 		for (Coupon coupon2 : coupons) {

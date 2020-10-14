@@ -62,6 +62,20 @@ public class CompanyController extends ClientController {
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
+	@PutMapping("updateCompany")
+	public ResponseEntity<?> updateCompany(@RequestBody Company company,
+			@RequestHeader(name = "Coupon-System-Header") String token) {
+		try {
+			tokenManager.isTokenExist(token);
+			companyService.updateCompany(company);
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} catch (NotExistException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		} catch (NotAllowedException enew) {
+			return ResponseEntity.badRequest().body(enew.getMessage());
+		}
+	}
+
 	@PutMapping("setCompanyId/{id}")
 	public ResponseEntity<?> setCompanyId(@PathVariable int id,
 			@RequestHeader(name = "Coupon-System-Header") String token) {
