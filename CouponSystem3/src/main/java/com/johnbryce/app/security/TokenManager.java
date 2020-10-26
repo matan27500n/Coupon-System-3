@@ -1,6 +1,8 @@
 package com.johnbryce.app.security;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TokenManager {
 
+	private List<String> tokens = new ArrayList<String>();
+
 	@Autowired
 	private HashMap<String, CustomSession> tokensInMemory;
 
@@ -26,6 +30,7 @@ public class TokenManager {
 
 	public String addToken(ClientService clientService) {
 		String token = UUID.randomUUID().toString();
+		tokens.add(token);
 		tokensInMemory.put(token, new CustomSession(clientService, System.currentTimeMillis()));
 		System.out.println("tokensInMemory: " + tokensInMemory);
 		return token;
@@ -49,6 +54,7 @@ public class TokenManager {
 	}
 
 	public void removeToken(String token) {
+		tokens.remove(token);
 		tokensInMemory.remove(token);
 	}
 }

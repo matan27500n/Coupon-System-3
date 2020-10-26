@@ -2,6 +2,7 @@ package com.johnbryce.app.rest;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -46,7 +47,9 @@ public class CompanyController extends ClientController {
 	@PostMapping("login/{email}/{password}")
 	public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password) throws LoginException {
 		token = loginManager.login2(email, password, ClientType.Company);
+		// HttpHeaders responseHeaders = new HttpHeaders();
 		if (token != null) {
+			// responseHeaders.set("Authorization", token);
 			LoginResponse loginResponse = new LoginResponse();
 			loginResponse.setToken(token);
 			loginResponse.setType(ClientType.Company);

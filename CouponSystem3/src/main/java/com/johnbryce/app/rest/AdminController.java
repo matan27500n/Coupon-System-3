@@ -25,7 +25,6 @@ import com.johnbryce.app.exceptions.NotExistException;
 import com.johnbryce.app.security.ClientType;
 import com.johnbryce.app.security.LoginManager;
 import com.johnbryce.app.security.TokenManager;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

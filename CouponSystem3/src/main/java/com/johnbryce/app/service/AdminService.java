@@ -3,6 +3,7 @@ package com.johnbryce.app.service;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import com.johnbryce.app.beans.Company;
 import com.johnbryce.app.beans.Coupon;
 import com.johnbryce.app.beans.Customer;
@@ -20,6 +21,14 @@ public class AdminService extends ClientService {
 
 	public boolean isCompanyExists(int id) {
 		return companyRepository.existsById(id);
+	}
+
+	public void registerCompany(@RequestBody Company company) {
+		companyRepository.save(company);
+	}
+
+	public void registerCustomer(@RequestBody Customer customer) {
+		customerRepository.save(customer);
 	}
 
 	public void addCompany(Company company) throws AlreadyExitsException {
