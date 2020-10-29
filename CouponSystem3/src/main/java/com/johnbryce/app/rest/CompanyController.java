@@ -2,7 +2,6 @@ package com.johnbryce.app.rest;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.johnbryce.app.beans.Category;
@@ -25,7 +23,6 @@ import com.johnbryce.app.exceptions.NotExistException;
 import com.johnbryce.app.security.ClientType;
 import com.johnbryce.app.security.LoginManager;
 import com.johnbryce.app.security.TokenManager;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -47,9 +44,7 @@ public class CompanyController extends ClientController {
 	@PostMapping("login/{email}/{password}")
 	public ResponseEntity<?> login(@PathVariable String email, @PathVariable String password) throws LoginException {
 		token = loginManager.login2(email, password, ClientType.Company);
-		// HttpHeaders responseHeaders = new HttpHeaders();
 		if (token != null) {
-			// responseHeaders.set("Authorization", token);
 			LoginResponse loginResponse = new LoginResponse();
 			loginResponse.setToken(token);
 			loginResponse.setType(ClientType.Company);
@@ -59,57 +54,41 @@ public class CompanyController extends ClientController {
 	}
 
 	@DeleteMapping("logout")
-	public ResponseEntity<?> logout(@RequestHeader(name = "Coupon-System-Header") String token) {
+	public ResponseEntity<?> logout() {
 		tokenManager.removeToken(token);
 		System.out.println("Remove token successfully");
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@PutMapping("updateCompany")
-	public ResponseEntity<?> updateCompany(@RequestBody Company company,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
+	public ResponseEntity<?> updateCompany(@RequestBody Company company) {
 		try {
-			tokenManager.isTokenExist(token);
 			companyService.updateCompany(company);
 			return new ResponseEntity<Void>(HttpStatus.OK);
-		} catch (NotExistException e) {
+		} catch (NotExistException | NotAllowedException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
-		} catch (NotAllowedException enew) {
-			return ResponseEntity.badRequest().body(enew.getMessage());
 		}
 	}
 
 	@PutMapping("setCompanyId/{id}")
-	public ResponseEntity<?> setCompanyId(@PathVariable int id,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
-		try {
-			tokenManager.isTokenExist(token);
-			this.companyService.setCompanyID(id);
-			return new ResponseEntity<Void>(HttpStatus.OK);
-		} catch (NotExistException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public ResponseEntity<?> setCompanyId(@PathVariable int id) {
+		this.companyService.setCompanyID(id);
+		return new ResponseEntity<Void>(HttpStatus.OK);
 	}
 
 	@PostMapping("addCoupon")
-	public ResponseEntity<?> addCoupon(@RequestBody Coupon coupon,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
+	public ResponseEntity<?> addCoupon(@RequestBody Coupon coupon) {
 		try {
-			tokenManager.isTokenExist(token);
 			companyService.addCoupon(coupon);
 			return new ResponseEntity<Void>(HttpStatus.CREATED);
 		} catch (NotAllowedException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
 	}
 
 	@PutMapping("updateCoupon")
-	public ResponseEntity<?> updateCoupon(@RequestBody Coupon coupon,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
+	public ResponseEntity<?> updateCoupon(@RequestBody Coupon coupon) {
 		try {
-			tokenManager.isTokenExist(token);
 			companyService.updateCoupon(coupon);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} catch (NotExistException e) {
@@ -118,10 +97,8 @@ public class CompanyController extends ClientController {
 	}
 
 	@DeleteMapping("deleteCoupon/{id}")
-	public ResponseEntity<?> deleteCoupon(@PathVariable int id,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
+	public ResponseEntity<?> deleteCoupon(@PathVariable int id) {
 		try {
-			tokenManager.isTokenExist(token);
 			companyService.deleteCoupon(id);
 			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 		} catch (NotExistException e) {
@@ -130,10 +107,8 @@ public class CompanyController extends ClientController {
 	}
 
 	@GetMapping("getOneCoupon/{id}")
-	public ResponseEntity<?> getOneCoupon(@PathVariable int id,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
+	public ResponseEntity<?> getOneCoupon(@PathVariable int id) {
 		try {
-			tokenManager.isTokenExist(token);
 			return new ResponseEntity<Coupon>(companyService.getOneCoupon(id), HttpStatus.OK);
 		} catch (NotExistException e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
@@ -141,22 +116,14 @@ public class CompanyController extends ClientController {
 	}
 
 	@GetMapping("getCompanyCoupons/{id}")
-	public ResponseEntity<?> getCompanyCoupons(@PathVariable int id,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
-		try {
-			tokenManager.isTokenExist(token);
-			companyService.setCompanyID(id);
-			return new ResponseEntity<List<Coupon>>(companyService.getCompanyCoupons(), HttpStatus.OK);
-		} catch (NotExistException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public ResponseEntity<?> getCompanyCoupons(@PathVariable int id) {
+		companyService.setCompanyID(id);
+		return new ResponseEntity<List<Coupon>>(companyService.getCompanyCoupons(), HttpStatus.OK);
 	}
 
 	@GetMapping("getCompanyCouponsCategory/{categoryID}/{id}")
-	public ResponseEntity<?> getCompanyCoupons(@PathVariable Category categoryID, @PathVariable int id,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
+	public ResponseEntity<?> getCompanyCoupons(@PathVariable Category categoryID, @PathVariable int id) {
 		try {
-			tokenManager.isTokenExist(token);
 			companyService.setCompanyID(id);
 			return new ResponseEntity<List<Coupon>>(companyService.getCompanyCoupons(categoryID), HttpStatus.OK);
 		} catch (NotExistException e) {
@@ -165,52 +132,25 @@ public class CompanyController extends ClientController {
 	}
 
 	@GetMapping("getCompanyCouponsMaxPrice/{price}/{id}")
-	public ResponseEntity<?> getCompanyCoupons(@PathVariable double price, @PathVariable int id,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
-		try {
-			System.out.println(id);
-			tokenManager.isTokenExist(token);
-			companyService.setCompanyID(id);
-			System.out.println("Company id: " + companyService.getCompanyID());
-			return new ResponseEntity<List<Coupon>>(companyService.getCompanyCoupons(price), HttpStatus.OK);
-		} catch (NotExistException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public ResponseEntity<?> getCompanyCoupons(@PathVariable double price, @PathVariable int id) {
+		companyService.setCompanyID(id);
+		return new ResponseEntity<List<Coupon>>(companyService.getCompanyCoupons(price), HttpStatus.OK);
 	}
 
 	@GetMapping("getCompanyDetails/{id}")
-	public ResponseEntity<?> getCompanyDetails(@PathVariable int id,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
-		try {
-			tokenManager.isTokenExist(token);
-			companyService.setCompanyID(id);
-			return new ResponseEntity<Company>(companyService.getCompanyDetailes(), HttpStatus.OK);
-		} catch (NotExistException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public ResponseEntity<?> getCompanyDetails(@PathVariable int id) {
+		companyService.setCompanyID(id);
+		return new ResponseEntity<Company>(companyService.getCompanyDetailes(), HttpStatus.OK);
 	}
 
 	@GetMapping("getCompanyByEmailAndPassword/{email}/{password}")
-	public ResponseEntity<?> getCompanyByEmailAndPassword(@PathVariable String email, @PathVariable String password,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
-		try {
-			tokenManager.isTokenExist(token);
-			return new ResponseEntity<Company>(companyService.getCompanyByEmailAndPassword(email, password),
-					HttpStatus.OK);
-		} catch (NotExistException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public ResponseEntity<?> getCompanyByEmailAndPassword(@PathVariable String email, @PathVariable String password) {
+		return new ResponseEntity<Company>(companyService.getCompanyByEmailAndPassword(email, password), HttpStatus.OK);
 	}
 
 	@GetMapping("getCompanyIdByEmailAndPassword/{email}/{password}")
-	public ResponseEntity<?> getCompanyIdByEmailAndPassword(@PathVariable String email, @PathVariable String password,
-			@RequestHeader(name = "Coupon-System-Header") String token) {
-		try {
-			tokenManager.isTokenExist(token);
-			return new ResponseEntity<Integer>(companyService.getCompanyIdByEmailAndPassword(email, password),
-					HttpStatus.OK);
-		} catch (NotExistException e) {
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
+	public ResponseEntity<?> getCompanyIdByEmailAndPassword(@PathVariable String email, @PathVariable String password) {
+		return new ResponseEntity<Integer>(companyService.getCompanyIdByEmailAndPassword(email, password),
+				HttpStatus.OK);
 	}
 }

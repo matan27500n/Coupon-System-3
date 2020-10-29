@@ -4,20 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import com.johnbryce.app.exceptions.NotExistException;
-import com.johnbryce.app.security.CustomSession;
 import com.johnbryce.app.security.TokenManager;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Map;
 
-//@Component
-//@Order(2)
+@Component
+@Order(2)
 public class LoginFilter implements Filter {
-
-	String token = null;
 
 	@Autowired
 	private TokenManager tokenManager;
@@ -29,21 +24,18 @@ public class LoginFilter implements Filter {
 
 		String pageRequested = req.getRequestURL().toString();
 
-		/*
-		 * if (pageRequested.endsWith("/login")) { chain.doFilter(request, response);
-		 * return; }
-		 * 
-		 * if (pageRequested.contains("admin")) { chain.doFilter(request, response);
-		 * return; }
-		 */
+		if (pageRequested.contains("/login")) {
+			System.out.println(pageRequested);
+			chain.doFilter(request, response);
+			return;
+		}
 
-		String token = tokenManager.getTokens().get(0);
+		String token = req.getHeader("Authorization");
 		System.out.println("Token : " + token);
 
 		if (token != null) {
 			try {
 				tokenManager.isTokenExist(token);
-				request.setAttribute("token", token);
 				chain.doFilter(request, response);
 				return;
 
