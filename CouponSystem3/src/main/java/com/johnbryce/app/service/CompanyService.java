@@ -84,9 +84,9 @@ public class CompanyService extends ClientService {
 	public List<Coupon> getCompanyCoupons(Category category) throws NotExistException {
 		List<Coupon> coupons = adminService.getAllCoupons();
 		List<Coupon> temp = new ArrayList<Coupon>();
-		for (int i = 0; i < coupons.size(); i++) {
-			if (coupons.get(i).getCategoryID().equals(category) && coupons.get(i).getCompanyID() == companyID) {
-				temp.add(coupons.get(i));
+		for (Coupon coupon : coupons) {
+			if (coupon.getCategoryID().equals(category) && coupon.getCompanyID() == companyID) {
+				temp.add(coupon);
 			}
 		}
 		return temp;
@@ -95,9 +95,9 @@ public class CompanyService extends ClientService {
 	public List<Coupon> getCompanyCoupons(double maxPrice) {
 		List<Coupon> coupons = couponRepository.findAll();
 		List<Coupon> temp = new ArrayList<Coupon>();
-		for (int i = 0; i < coupons.size(); i++) {
-			if (coupons.get(i).getPrice() <= maxPrice && coupons.get(i).getCompanyID() == companyID) {
-				temp.add(coupons.get(i));
+		for (Coupon coupon : coupons) {
+			if (coupon.getPrice() <= maxPrice && coupon.getCompanyID() == companyID) {
+				temp.add(coupon);
 			}
 		}
 		return temp;

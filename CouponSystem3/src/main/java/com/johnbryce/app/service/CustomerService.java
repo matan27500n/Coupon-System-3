@@ -84,21 +84,20 @@ public class CustomerService extends ClientService {
 	public List<Coupon> getCustomerCoupons(Category category) {
 		List<Coupon> coupons = customerRepository.getOne(customerID).getCoupons();
 		List<Coupon> temp = new ArrayList<Coupon>();
-		for (int i = 0; i < coupons.size(); i++) {
-			if (coupons.get(i).getCategoryID().equals(category)) {
-				temp.add(coupons.get(i));
+		for (Coupon coupon : coupons) {
+			if (coupon.getCategoryID().equals(category)) {
+				temp.add(coupon);
 			}
 		}
-
 		return temp;
 	}
 
 	public List<Coupon> getCustomerCoupons(double maxPrice) {
 		List<Coupon> coupons = customerRepository.getOne(customerID).getCoupons();
 		List<Coupon> temp = new ArrayList<Coupon>();
-		for (int i = 0; i < coupons.size(); i++) {
-			if (coupons.get(i).getPrice() < maxPrice) {
-				temp.add(coupons.get(i));
+		for (Coupon coupon : coupons) {
+			if (coupon.getPrice() <= maxPrice) {
+				temp.add(coupon);
 			}
 		}
 		return temp;

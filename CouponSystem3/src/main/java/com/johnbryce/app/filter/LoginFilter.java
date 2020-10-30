@@ -30,6 +30,12 @@ public class LoginFilter implements Filter {
 			return;
 		}
 
+		if (pageRequested.contains("/register")) {
+			System.out.println(pageRequested);
+			chain.doFilter(request, response);
+			return;
+		}
+
 		String token = req.getHeader("Authorization");
 		System.out.println("Token : " + token);
 
